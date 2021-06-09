@@ -1,0 +1,41 @@
+version: '3.8'
+
+services: 
+    spring_app:
+        container_name: spring_app
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        ports: 
+            - "3000:8081"
+        networks:
+            - spring-cloud-network
+        depends_on: 
+            - mysql_server
+        environment:
+            SPRING_DATASOURCE_URL: jdbc:mysql://spring_db:3306/spring_db?createDatabaseIfNotExist=true
+            SPRING_DATASOURCE_USERNAME: spring
+            SPRING_DATASOURCE_PASSWORD: root
+    mysql_server:
+        image: mysql:8.0
+        container_name: spring_db
+        environment: 
+            - MYSQL_DATABASE=spring_db
+            - MYSQL_USER=spring
+            - MYSQL_PASSWORD=root
+            - MYSQL_ROOT_PASSWORD=secret
+        ports: 
+            - 3306:3306
+        restart: always
+        networks:
+            - spring-cloud-network
+        volumes: 
+            - data:/Users/Origin/Desktop/SpringBootDB/spring-db/db_data
+
+networks:
+    spring-cloud-network:
+        driver: bridge
+
+volumes:
+    data:
+        external: true
